@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Mafia Email — Admin Dashboard</title>
+
+    <!-- Bootstrap & plugins -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        :root {
+            --sidebar-width: 240px;
+        }
+
+        body {
+            background: #f5f7fb;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .text-xs { font-size: .75rem; }
+        .text-sm { font-size: .875rem; }
+        .letter-spacing-2 { letter-spacing: .08em; }
+
+        body.app-layout {
+            min-height: 100vh;
+        }
+
+        #sidebar {
+            width: var(--sidebar-width);
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1f2a3c 0%, #111827 100%);
+            color: #e5e7eb;
+            transition: all 0.3s ease;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.25);
+            position: sticky;
+            top: 0;
+        }
+
+        #sidebar .brand-badge {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+        }
+
+        #sidebar .nav-link {
+            color: #9ca3af;
+            padding: 0.6rem 0.9rem;
+            border-radius: 0.5rem;
+            font-size: .875rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: .25rem;
+        }
+
+        #sidebar .nav-link i {
+            width: 18px;
+            text-align: center;
+            font-size: .9rem;
+        }
+
+        #sidebar .nav-link.active,
+        #sidebar .nav-link:hover {
+            color: #f9fafb;
+            background: rgba(148, 163, 184, 0.18);
+        }
+
+        #sidebar small {
+            opacity: 0.75;
+        }
+
+        .topbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            backdrop-filter: blur(10px);
+            z-index: 1030;
+        }
+
+        .topbar .title-prefix {
+            text-transform: uppercase;
+            font-size: .7rem;
+            letter-spacing: .18em;
+            color: #9ca3af;
+        }
+
+        .topbar .badge {
+            font-size: .65rem;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+        }
+
+        .card-header {
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0.9rem 1.1rem;
+        }
+
+        .card-header h6 {
+            font-size: .9rem;
+        }
+
+        .card-header p.small {
+            margin-bottom: 0;
+            color: #9ca3af !important;
+        }
+
+        .card-body {
+            padding: 0.9rem 1.1rem 1rem;
+        }
+
+        .stat-pill {
+            border-radius: 0.8rem;
+            padding: 0.75rem 0.5rem;
+        }
+
+        .stat-pill span.h5 {
+            font-size: 1.1rem;
+        }
+
+        table.dataTable > thead > tr > th {
+            border-bottom: 1px solid #e5e7eb !important;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: #6b7280;
+        }
+
+        table.dataTable tbody td {
+            vertical-align: middle;
+            font-size: .82rem;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: .1rem .4rem !important;
+        }
+
+        .form-control-sm,
+        .btn-sm {
+            font-size: .8rem;
+        }
+
+        .form-control.rounded-pill,
+        .form-control-sm.rounded-pill {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .btn.rounded-pill {
+            padding-left: .9rem;
+            padding-right: .9rem;
+        }
+
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .35rem;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+        }
+
+        .sticky-footer {
+            padding: 0.75rem 0;
+            font-size: .75rem;
+        }
+
+        .offcanvas-sidebar {
+            background: #111827;
+        }
+        .offcanvas-sidebar .nav-link {
+            color: #e5e7eb;
+        }
+        .offcanvas-sidebar .nav-link.active,
+        .offcanvas-sidebar .nav-link:hover {
+            background: rgba(156, 163, 175, 0.18);
+        }
+
+        @media (max-width: 767.98px) {
+            body.app-layout {
+                flex-direction: column;
+            }
+
+            #content-wrapper {
+                min-height: 100vh;
+            }
+
+            .card-body {
+                padding: 0.85rem;
+            }
+
+            .card-header {
+                padding-inline: 0.85rem;
+            }
+
+            .table-responsive {
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body.app-layout {
+                display: flex;
+                flex-direction: row;
+            }
+
+            #content-wrapper {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body class="app-layout">
+    <!-- SIDEBAR (DESKTOP) -->
+    <nav id="sidebar" class="d-none d-md-flex flex-column p-3">
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary-subtle">
+            <div class="brand-badge rounded-circle d-flex align-items-center justify-content-center me-2 text-white">
+                <i class="fas fa-envelope-open-text fa-sm"></i>
+            </div>
+            <div>
+                <div class="fw-semibold text-sm">Mafia Email Admin</div>
+                <small class="text-xs">Internal control dashboard</small>
+            </div>
+        </div>
+
+        <ul class="nav flex-column flex-grow-1 mb-3">
+            <li class="nav-item mb-1">
+                <a class="nav-link active" href="#">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="nav-link" href="./index.html" target="_blank">
+                    <i class="fas fa-fw fa-external-link-alt"></i>
+                    <span>Open User UI</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="mt-auto pt-3 border-top border-secondary-subtle">
+            <div class="fw-semibold text-sm">Mafia Email</div>
+            <small class="text-xs d-block">Built on top of Gmail &amp; temp-mail style.</small>
+        </div>
+    </nav>
+
+    <!-- CONTENT WRAPPER -->
+    <div id="content-wrapper" class="d-flex flex-column flex-grow-1">
+        <!-- TOPBAR -->
+        <header class="topbar sticky-top shadow-sm">
+            <div class="container-fluid px-3 px-md-4 py-2 py-md-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-secondary btn-sm d-md-none me-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <div class="title-prefix mb-1">Dashboard</div>
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                            <h4 class="h6 mb-0 fw-semibold">
+                                Mafia Email — Admin
+                            </h4>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                beta
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <span id="adminStatus" class="badge bg-danger-subtle text-danger p-2 fw-normal">
+                        Disconnected
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- OFFCANVAS SIDEBAR (MOBILE) -->
+        <div class="offcanvas offcanvas-start offcanvas-sidebar text-white" tabindex="-1" id="offcanvasSidebar">
+            <div class="offcanvas-header border-bottom border-secondary">
+                <h5 class="offcanvas-title">Mafia Email Admin</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-1">
+                        <a class="nav-link active" href="#">
+                            <i class="fas fa-fw fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item mb-1">
+                        <a class="nav-link" href="./index.html" target="_blank">
+                            <i class="fas fa-fw fa-external-link-alt me-2"></i> Open User UI
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-grow-1 py-3 py-md-4">
+            <div class="container-fluid px-3 px-md-4">
+
+                <!-- CONFIG + STATS -->
+                <div class="row g-3 g-xl-4 mb-3 mb-md-4">
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">API Settings</h6>
+                                    <p class="text-muted small mb-0">
+                                        Konfigurasi endpoint backend dan admin key.
+                                    </p>
+                                </div>
+                                <button id="btnSaveConfig" class="btn btn-primary btn-sm rounded-pill fw-medium btn-icon">
+                                    <i class="fas fa-save"></i>
+                                    <span>Save &amp; Reload</span>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="backendUrl" class="form-label small mb-1">Backend URL</label>
+                                        <input
+                                            id="backendUrl"
+                                            type="text"
+                                            class="form-control form-control-sm rounded-pill"
+                                            value="http://localhost:3000"
+                                        />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="adminKey" class="form-label small mb-1">Admin API Key</label>
+                                        <input
+                                            id="adminKey"
+                                            type="password"
+                                            class="form-control form-control-sm rounded-pill"
+                                            value="dev-admin-key"
+                                        />
+                                    </div>
+                                </div>
+                                <p class="text-muted small mt-3 mb-0">
+                                    Header yang dikirim:
+                                    <code class="bg-light px-2 py-1 rounded small">x-admin-key: &lt;API_KEY&gt;</code>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 fw-bold">Stats</h6>
+                                <button id="btnRefreshStats" class="btn btn-link btn-sm text-decoration-none fw-medium btn-icon">
+                                    <i class="fas fa-sync-alt"></i>
+                                    <span>Refresh</span>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center g-2 g-md-3">
+                                    <div class="col-4">
+                                        <div class="stat-pill bg-primary-subtle text-primary d-flex flex-column justify-content-center align-items-center h-100">
+                                            <span id="statAliases" class="h5 mb-1 fw-bold">-</span>
+                                            <span class="small text-muted">Total Aliases</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stat-pill bg-success-subtle text-success d-flex flex-column justify-content-center align-items-center h-100">
+                                            <span id="statHits" class="h5 mb-1 fw-bold">-</span>
+                                            <span class="small text-muted">Total Hits</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stat-pill bg-light d-flex flex-column justify-content-center align-items-center h-100">
+                                            <span id="statLastCreated" class="small fw-medium text-truncate" style="max-width: 100%;">
+                                                -
+                                            </span>
+                                            <span class="small text-muted">Last Created</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALIASES + DOMAINS -->
+                <div class="row g-3 g-xl-4 mb-3 mb-md-4">
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">
+                                        Aliases
+                                        <span class="badge bg-secondary ms-1" id="aliasCountBadge">0</span>
+                                    </h6>
+                                    <p class="text-muted small mb-0">
+                                        List alias yang pernah di-generate di frontend (bukan daftar seluruh email di Gmail).
+                                    </p>
+                                </div>
+                                <button id="btnRefreshAliases" class="btn btn-link btn-sm text-decoration-none fw-medium btn-icon">
+                                    <i class="fas fa-sync-alt"></i><span>Refresh</span>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <input
+                                    id="searchAlias"
+                                    type="text"
+                                    placeholder="Filter alias..."
+                                    class="form-control form-control-sm mb-3 rounded-pill"
+                                />
+                                <div class="table-responsive">
+                                    <table id="aliasTable" class="table table-hover table-sm align-middle" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Alias</th>
+                                                <th>Created</th>
+                                                <th>Last Used</th>
+                                                <th>Hits</th>
+                                                <th class="text-end">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="aliasTableBody">
+                                            <tr><td colspan="6" class="text-center small text-muted py-3">Loading...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">
+                                        Domains
+                                        <span class="badge bg-secondary ms-1" id="domainCountBadge">0</span>
+                                    </h6>
+                                    <p class="text-muted small mb-0">
+                                        Domain di sini hanya metadata untuk dashboard.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-group input-group-sm mb-3">
+                                    <input
+                                        id="newDomainInput"
+                                        type="text"
+                                        placeholder="example.com"
+                                        class="form-control rounded-start-pill"
+                                    />
+                                    <button
+                                        id="btnAddDomain"
+                                        class="btn btn-primary rounded-end-pill fw-medium btn-icon"
+                                        type="button"
+                                    >
+                                        <i class="fas fa-plus"></i>
+                                        <span>Add</span>
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table id="domainTable" class="table table-hover table-sm align-middle" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Domain</th>
+                                                <th>Status</th>
+                                                <th class="text-end">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="domainTableBody">
+                                            <tr><td colspan="4" class="text-center small text-muted py-3">Loading...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIVE MONITOR -->
+                <div class="row g-3 g-xl-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">
+                                        Live Monitor
+                                        <span class="badge bg-secondary ms-1" id="logCountBadge">0</span>
+                                    </h6>
+                                    <p class="text-muted small mb-0">
+                                        Log ini di-generate dari setiap panggilan
+                                        <code class="bg-light px-1 rounded small">/api/messages</code> oleh user UI.
+                                    </p>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <button
+                                        id="btnClearLogs"
+                                        class="btn btn-outline-danger btn-sm rounded-pill fw-medium btn-icon"
+                                    >
+                                        <i class="fas fa-trash-alt"></i>
+                                        <span>Clear Logs</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <input
+                                    id="monitorAlias"
+                                    type="text"
+                                    placeholder="Filter by alias..."
+                                    class="form-control form-control-sm mb-3 rounded-pill"
+                                />
+                                <div class="table-responsive">
+                                    <table id="logTable" class="table table-striped table-sm align-middle" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Time</th>
+                                                <th>Alias</th>
+                                                <th>From</th>
+                                                <th>Subject</th>
+                                                <th>Snippet</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="logTableBody">
+                                            <tr><td colspan="5" class="text-center small text-muted py-3">Waiting for data...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="bg-white sticky-footer border-top mt-auto">
+            <div class="container-fluid px-3 px-md-4 my-auto">
+                <div class="text-center my-auto small text-muted">
+                    <span>Copyright &copy; Mafia Email Admin 2025</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        // ================================
+        //  STATE GLOBAL & KONFIGURASI
+        // ================================
+        let aliasDataTable  = null;
+        let domainDataTable = null;
+        let logDataTable    = null;
+
+        const backendUrlInput = document.getElementById("backendUrl");
+        const adminKeyInput   = document.getElementById("adminKey");
+        const adminStatus     = document.getElementById("adminStatus");
+
+        const statAliases     = document.getElementById("statAliases");
+        const statHits        = document.getElementById("statHits");
+        const statLastCreated = document.getElementById("statLastCreated");
+
+        const aliasTableBody   = document.getElementById("aliasTableBody");
+        const aliasCountBadge  = document.getElementById("aliasCountBadge");
+        const searchAliasInput = document.getElementById("searchAlias");
+
+        const domainTableBody  = document.getElementById("domainTableBody");
+        const domainCountBadge = document.getElementById("domainCountBadge");
+        const newDomainInput   = document.getElementById("newDomainInput");
+
+        const logTableBody      = document.getElementById("logTableBody");
+        const logCountBadge     = document.getElementById("logCountBadge");
+        const monitorAliasInput = document.getElementById("monitorAlias");
+
+        let allAliases = [];
+        let allDomains = [];
+
+        let smartTicker        = null;
+        let lastStatsRefresh   = 0;
+        let lastAliasesRefresh = 0;
+        let lastDomainsRefresh = 0;
+        let lastLogsRefresh    = 0;
+
+        const STATS_INTERVAL   = 15_000;
+        const ALIASES_INTERVAL = 20_000;
+        const DOMAINS_INTERVAL = 30_000;
+        const LOGS_INTERVAL    = 5_000;
+
+        // ================================
+        //  UTILITAS UMUM
+        // ================================
+        function toast(msg, type = "info") {
+            try {
+                let toastContainer = document.querySelector(".toast-container");
+                if (!toastContainer) {
+                    toastContainer = document.createElement("div");
+                    toastContainer.className = "toast-container";
+                    document.body.appendChild(toastContainer);
+                }
+
+                const alertClass =
+                    type === "success" ? "bg-success text-white" :
+                    type === "error"   ? "bg-danger text-white"  :
+                                         "bg-info text-white";
+
+                const wrapper = document.createElement("div");
+                wrapper.innerHTML = `
+                    <div class="toast align-items-center ${alertClass} border-0"
+                        role="alert" aria-live="assertive" aria-atomic="true"
+                        data-bs-delay="2000">
+                        <div class="d-flex">
+                            <div class="toast-body small">
+                                ${msg}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                    data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                const toastEl = wrapper.firstElementChild;
+                toastContainer.appendChild(toastEl);
+
+                if (window.bootstrap && bootstrap.Toast) {
+                    const bsToast = bootstrap.Toast.getOrCreateInstance(toastEl);
+                    toastEl.addEventListener("hidden.bs.toast", () => {
+                        toastEl.remove();
+                    });
+                    bsToast.show();
+                } else {
+                    // fallback kalau Bootstrap Toast gak tersedia
+                    console.warn("Bootstrap.Toast not found, fallback to alert()");
+                    alert(msg);
+                    toastEl.remove();
+                }
+            } catch (e) {
+                console.error("Toast error:", e);
+                // fallback paling aman
+                try { alert(msg); } catch (_) {}
+            }
+        }
+
+        function loadConfig() {
+            const saved = localStorage.getItem("mafiaAdminConfig");
+            if (saved) {
+                try {
+                    const cfg = JSON.parse(saved);
+                    if (cfg.backendUrl) backendUrlInput.value = cfg.backendUrl;
+                    if (cfg.adminKey)   adminKeyInput.value   = cfg.adminKey;
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+
+        function saveConfig() {
+            const cfg = {
+                backendUrl: backendUrlInput.value.trim(),
+                adminKey:   adminKeyInput.value
+            };
+            localStorage.setItem("mafiaAdminConfig", JSON.stringify(cfg));
+            toast("Config saved", "success");
+        }
+
+        function getConfig() {
+            return {
+                backendUrl: backendUrlInput.value.trim().replace(/\/+$/, ""),
+                adminKey:   adminKeyInput.value
+            };
+        }
+
+        function formatDate(str) {
+            if (!str) return "-";
+            try {
+                return new Date(str).toLocaleString();
+            } catch {
+                return str;
+            }
+        }
+
+        function setAdminStatus(mode, extra = {}) {
+            if (mode === "checking") {
+                adminStatus.textContent = "Checking backend...";
+                adminStatus.className = "badge bg-warning-subtle text-warning p-2 fw-normal";
+                return;
+            }
+            if (mode === "ok") {
+                const latency = extra.latencyMs != null ? ` · ${extra.latencyMs} ms` : "";
+                const t = extra.time ? ` · ${extra.time.toLocaleTimeString()}` : "";
+                adminStatus.textContent = `Connected${latency}${t}`;
+                adminStatus.className = "badge bg-success-subtle text-success p-2 fw-normal";
+                return;
+            }
+            if (mode === "error") {
+                adminStatus.textContent = "Error connecting backend";
+                adminStatus.className = "badge bg-danger-subtle text-danger p-2 fw-normal";
+            }
+        }
+
+        // ================================
+        //  FUNGSI API
+        // ================================
+        async function apiGet(path) {
+            const cfg = getConfig();
+            const res = await fetch(cfg.backendUrl + path, {
+                headers: { "x-admin-key": cfg.adminKey }
+            });
+            if (!res.ok) throw new Error("API error " + res.status);
+            return res.json();
+        }
+
+        async function apiPost(path, body) {
+            const cfg = getConfig();
+            const res = await fetch(cfg.backendUrl + path, {
+                method: "POST",
+                headers: {
+                    "x-admin-key": cfg.adminKey,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body || {})
+            });
+            if (!res.ok) throw new Error("API error " + res.status);
+            return res.json();
+        }
+
+        async function apiPut(path, body) {
+            const cfg = getConfig();
+            const res = await fetch(cfg.backendUrl + path, {
+                method: "PUT",
+                headers: {
+                    "x-admin-key": cfg.adminKey,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body || {})
+            });
+            if (!res.ok) throw new Error("API error " + res.status);
+            return res.json();
+        }
+
+        async function apiDelete(path) {
+            const cfg = getConfig();
+            const res = await fetch(cfg.backendUrl + path, {
+                method: "DELETE",
+                headers: { "x-admin-key": cfg.adminKey }
+            });
+            if (!res.ok) throw new Error("API error " + res.status);
+            return {};
+        }
+
+        // ================================
+        //  STATS
+        // ================================
+        async function loadStats() {
+            try {
+                setAdminStatus("checking");
+                const start = performance.now();
+
+                const data = await apiGet("/api/admin/stats");
+                const latency = Math.round(performance.now() - start);
+
+                statAliases.textContent     = data.totalAliases ?? 0;
+                statHits.textContent        = data.totalHits ?? 0;
+                statLastCreated.textContent = data.lastAliasCreatedAt
+                    ? formatDate(data.lastAliasCreatedAt)
+                    : "-";
+
+                setAdminStatus("ok", { latencyMs: latency, time: new Date() });
+                lastStatsRefresh = Date.now();
+            } catch (e) {
+                console.error(e);
+                setAdminStatus("error");
+                toast("Failed to load stats", "error");
+            }
+        }
+
+        // ================================
+        //  ALIASES
+        // ================================
+        function buildAliasRows(filtered) {
+            return filtered
+                .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+                .map((a, idx) => {
+                    const hits = a.hits ?? 0;
+                    const deleteButton = `
+                        <button
+                            class="btn btn-sm btn-danger rounded-pill fw-medium btn-del-alias btn-icon"
+                            data-alias="${a.address}"
+                        >
+                            <i class="fas fa-trash-alt"></i><span>Del</span>
+                        </button>
+                    `;
+                    const openLink = `
+                        <a
+                            href="./index.html#${encodeURIComponent(a.address)}"
+                            target="_blank"
+                            class="btn btn-sm btn-outline-secondary rounded-pill fw-medium me-1 btn-icon"
+                        >
+                            <i class="fas fa-external-link-alt"></i><span>Open</span>
+                        </a>
+                    `;
+                    return [
+                        idx + 1,
+                        `<code class="small">${a.address}</code>`,
+                        formatDate(a.createdAt),
+                        formatDate(a.lastUsedAt),
+                        hits,
+                        `<div class="d-flex justify-content-end flex-wrap gap-1">${openLink}${deleteButton}</div>`
+                    ];
+                });
+        }
+
+        function renderAliases(filtered) {
+            const dataSet = buildAliasRows(filtered);
+            if (!aliasDataTable) {
+                aliasDataTable = $('#aliasTable').DataTable({
+                    data: dataSet,
+                    columns: [
+                        { title: "#" },
+                        { title: "Alias" },
+                        { title: "Created" },
+                        { title: "Last Used" },
+                        { title: "Hits", className: "text-center" },
+                        { title: "Actions", orderable: false, searchable: false }
+                    ],
+                    searching: false,
+                    info: true,
+                    paging: true,
+                    order: [[2, 'desc']],
+                    pageLength: 5,
+                    lengthChange: false,
+                    language: { emptyTable: "No aliases found." }
+                });
+
+                $('#aliasTable').on('click', '.btn-del-alias', async function () {
+                    const alias = this.getAttribute('data-alias');
+                    const ok = confirm(
+                        `Delete alias ${alias} dari dashboard?\nEmail tetap ada di Gmail, hanya hilang dari daftar alias.`
+                    );
+                    if (!ok) return;
+                    try {
+                        await apiDelete("/api/admin/aliases/" + encodeURIComponent(alias));
+                        await loadAliases();     // refresh dulu
+                        await loadStats();
+                        toast("Alias deleted", "success");
+                    } catch (e) {
+                        console.error(e);
+                        toast("Failed to delete alias. Error: " + e.message, "error");
+                    }
+                });
+            } else {
+                aliasDataTable.clear();
+                aliasDataTable.rows.add(dataSet);
+                aliasDataTable.draw();
+            }
+
+            aliasCountBadge.textContent = filtered.length;
+        }
+
+        async function loadAliases() {
+            try {
+                const data = await apiGet("/api/admin/aliases");
+                allAliases = data.aliases || [];
+
+                const query = searchAliasInput.value.trim().toLowerCase();
+                const filtered = query
+                    ? allAliases.filter((a) =>
+                        (a.address || "").toLowerCase().includes(query)
+                    )
+                    : allAliases;
+
+                renderAliases(filtered);
+                lastAliasesRefresh = Date.now();
+            } catch (e) {
+                console.error(e);
+                if (!aliasDataTable) {
+                    aliasTableBody.innerHTML =
+                        '<tr><td colspan="6" class="text-center py-3 text-danger small">Failed to load aliases</td></tr>';
+                }
+                aliasCountBadge.textContent = 0;
+                toast("Failed to load aliases. Error: " + e.message, "error");
+            }
+        }
+
+        // ================================
+        //  DOMAINS
+        // ================================
+        function buildDomainRows(domains) {
+            return domains.map((d, idx) => {
+                const statusBadge =
+                    `<span class="badge ${d.active ? "bg-success" : "bg-secondary"}">${d.active ? "Active" : "Disabled"}</span>`;
+                const toggleButton = `
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill fw-medium btn-toggle-domain btn-icon"
+                            data-domain="${d.name}" data-active="${d.active}">
+                        <span>${d.active ? "Disable" : "Enable"}</span>
+                    </button>
+                `;
+                const deleteButton = `
+                    <button class="btn btn-sm btn-danger rounded-pill fw-medium btn-del-domain btn-icon"
+                            data-domain="${d.name}">
+                        <i class="fas fa-trash-alt"></i><span>Del</span>
+                    </button>
+                `;
+                return [
+                    idx + 1,
+                    `<code class="small">${d.name}</code>`,
+                    statusBadge,
+                    `<div class="d-flex justify-content-end flex-wrap gap-1">${toggleButton} ${deleteButton}</div>`
+                ];
+            });
+        }
+
+        function renderDomains(domains) {
+            const dataSet = buildDomainRows(domains);
+            if (!domainDataTable) {
+                domainDataTable = $('#domainTable').DataTable({
+                    data: dataSet,
+                    columns: [
+                        { title: "#" },
+                        { title: "Domain" },
+                        { title: "Status" },
+                        { title: "Actions", orderable: false, searchable: false }
+                    ],
+                    searching: false,
+                    info: false,
+                    paging: false,
+                    order: [[1, 'asc']],
+                    language: { emptyTable: "No domains found." }
+                });
+
+                $('#domainTable').on('click', '.btn-toggle-domain', async function () {
+                    const domain   = this.getAttribute('data-domain');
+                    const isActive = this.getAttribute('data-active') === 'true';
+                    try {
+                        await apiPut(
+                            "/api/admin/domains/" + encodeURIComponent(domain),
+                            { active: !isActive }
+                        );
+                        await loadDomains();   // refresh dulu
+                        toast("Domain updated", "success");
+                    } catch (e) {
+                        console.error(e);
+                        toast("Failed to update domain. Error: " + e.message, "error");
+                    }
+                });
+
+                $('#domainTable').on('click', '.btn-del-domain', async function () {
+                    const domain = this.getAttribute('data-domain');
+                    const ok = confirm(`Delete domain ${domain}?`);
+                    if (!ok) return;
+                    try {
+                        await apiDelete("/api/admin/domains/" + encodeURIComponent(domain));
+                        await loadDomains();   // refresh dulu
+                        toast("Domain deleted", "success");
+                    } catch (e) {
+                        console.error(e);
+                        toast("Failed to delete domain. Error: " + e.message, "error");
+                    }
+                });
+            } else {
+                domainDataTable.clear();
+                domainDataTable.rows.add(dataSet);
+                domainDataTable.draw();
+            }
+
+            domainCountBadge.textContent = domains.length;
+        }
+
+        async function loadDomains() {
+            try {
+                const data = await apiGet("/api/admin/domains");
+                allDomains = data.domains || [];
+                renderDomains(allDomains);
+                lastDomainsRefresh = Date.now();
+            } catch (e) {
+                console.error(e);
+                if (!domainDataTable) {
+                    domainTableBody.innerHTML =
+                        '<tr><td colspan="4" class="text-center py-3 text-danger small">Failed to load domains</td></tr>';
+                }
+                domainCountBadge.textContent = 0;
+                toast("Failed to load domains. Error: " + e.message, "error");
+            }
+        }
+
+        // ================================
+        //  LOGS
+        // ================================
+        function buildLogRows(logs) {
+            return logs.map((l) => {
+                return [
+                    formatDate(l.lastSeenAt),
+                    `<code class="small">${l.alias || "-"}</code>`,
+                    l.from || "",
+                    l.subject || "",
+                    (l.snippet || "").slice(0, 80)
+                ];
+            });
+        }
+
+        function renderLogs(logs) {
+            const dataSet = buildLogRows(logs);
+            if (!logDataTable) {
+                logDataTable = $('#logTable').DataTable({
+                    data: dataSet,
+                    columns: [
+                        { title: "Time",    orderable: false, width: "15%" },
+                        { title: "Alias",   orderable: false, width: "15%" },
+                        { title: "From",    orderable: false, width: "20%" },
+                        { title: "Subject", orderable: false, width: "25%" },
+                        { title: "Snippet", orderable: false, width: "25%" }
+                    ],
+                    searching: false,
+                    info: false,
+                    paging: false,
+                    order: [[0, 'desc']],
+                    language: { emptyTable: "No logs found." }
+                });
+            } else {
+                logDataTable.clear();
+                logDataTable.rows.add(dataSet);
+                logDataTable.draw();
+            }
+
+            logCountBadge.textContent = logs.length;
+        }
+
+        async function loadLogs() {
+            try {
+                const aliasFilter = monitorAliasInput.value.trim();
+                const params = new URLSearchParams();
+                params.set("limit", "50");
+                if (aliasFilter) params.set("alias", aliasFilter);
+                const data = await apiGet("/api/admin/logs?" + params.toString());
+                const logs = data.logs || [];
+
+                renderLogs(logs);
+                lastLogsRefresh = Date.now();
+            } catch (e) {
+                console.error(e);
+                if (!logDataTable) {
+                    logTableBody.innerHTML =
+                        '<tr><td colspan="5" class="text-center py-3 text-danger small">Failed to load logs.</td></tr>';
+                }
+                logCountBadge.textContent = 0;
+                toast("Failed to load logs. Error: " + e.message, "error");
+            }
+        }
+
+        // ================================
+        //  SMART AUTO REFRESH
+        // ================================
+        function startSmartAutoRefresh() {
+            if (smartTicker) clearInterval(smartTicker);
+
+            smartTicker = setInterval(() => {
+                if (document.hidden) return;
+                const now = Date.now();
+
+                if (now - lastStatsRefresh   > STATS_INTERVAL)   loadStats();
+                if (now - lastAliasesRefresh > ALIASES_INTERVAL) loadAliases();
+                if (now - lastDomainsRefresh > DOMAINS_INTERVAL) loadDomains();
+                if (now - lastLogsRefresh    > LOGS_INTERVAL)    loadLogs();
+            }, 2000);
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) {
+                loadStats();
+                loadAliases();
+                loadDomains();
+                loadLogs();
+            }
+        });
+
+        // ================================
+        //  EVENTS UI
+        // ================================
+        document.getElementById("btnSaveConfig")
+            .addEventListener("click", () => {
+                saveConfig();
+                loadStats();
+                loadAliases();
+                loadDomains();
+                loadLogs();
+            });
+
+        document.getElementById("btnRefreshStats")
+            .addEventListener("click", loadStats);
+
+        document.getElementById("btnRefreshAliases")
+            .addEventListener("click", loadAliases);
+
+        searchAliasInput.addEventListener("input", () => {
+            if (!allAliases.length) return;
+            const q = searchAliasInput.value.trim().toLowerCase();
+            const filtered = q
+                ? allAliases.filter((a) =>
+                    (a.address || "").toLowerCase().includes(q)
+                )
+                : allAliases;
+            renderAliases(filtered);
+        });
+
+        document.getElementById("btnAddDomain")
+            .addEventListener("click", async () => {
+                const name = newDomainInput.value.trim().toLowerCase();
+                if (!name) return;
+                try {
+                    await apiPost("/api/admin/domains", { name });
+                    newDomainInput.value = "";
+                    await loadDomains();   // refresh dulu
+                    toast("Domain added", "success");
+                } catch (e) {
+                    console.error(e);
+                    toast("Failed to add domain. Error: " + e.message, "error");
+                }
+            });
+
+        monitorAliasInput.addEventListener("input", () => {
+            loadLogs();
+        });
+
+        document.getElementById("btnClearLogs")
+            .addEventListener("click", async () => {
+                const ok = confirm("Clear all logs?");
+                if (!ok) return;
+                try {
+                    await apiDelete("/api/admin/logs");
+                    await loadLogs();   // refresh dulu
+                    toast("Logs cleared", "success");
+                } catch (e) {
+                    console.error(e);
+                    toast("Failed to clear logs. Error: " + e.message, "error");
+                }
+            });
+
+        // ================================
+        //  INIT
+        // ================================
+        $(document).ready(function () {
+            loadConfig();
+            loadStats();
+            loadAliases();
+            loadDomains();
+            loadLogs();
+            startSmartAutoRefresh();
+        });
+    </script>
+</body>
+</html>

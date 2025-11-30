@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Temporary Email Service</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: #f6f7fb;
+      }
+      .brand-bubble {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+      }
+      .hero {
+        background: #5f6bff;
+        color: #fff;
+        border-radius: 16px;
+      }
+      .mail-item:hover {
+        background: #f1f4ff;
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+      }
+      .btn-ghost {
+        --bs-btn-color: #334155;
+        --bs-btn-hover-bg: #f1f5f9;
+        --bs-btn-border-color: transparent;
+      }
+      .sticky-top-bar {
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+        background: #fff;
+        border-bottom: 1px solid #eef2f7;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Top Bar -->
+    <div class="sticky-top-bar">
+      <div class="container-xxl py-3 d-flex align-items-center gap-3">
+        <div class="brand-bubble bg-primary-subtle text-primary">
+          <i class="bi bi-envelope-fill"></i>
+        </div>
+        <div class="fw-semibold">Mafia Tempmail</div>
+        <div class="ms-auto d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-outline-secondary"><a href="admin.html" class="text-decoration-none text-muted">Admin</a></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="container-xxl py-4">
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-9">
+          <!-- Header panel -->
+          <div class="p-4 hero mb-3">
+            <h5 class="mb-2">Your Temporary Email</h5>
+            <p class="mb-3 opacity-75 small">
+              Use this address to receive emails without revealing your personal
+              inbox
+            </p>
+
+            <div class="row g-2 align-items-center">
+              <div class="col-md-8 col-lg-9">
+                <div class="input-group">
+                  <span class="input-group-text bg-white"
+                    ><i class="bi bi-at"></i
+                  ></span>
+                  <input
+                    id="addr"
+                    class="form-control form-control-lg mono"
+                    value="random@selebungms.my.id"
+                  />
+                </div>
+              </div>
+              <div
+                class="col-md-4 col-lg-3 text-md-end d-grid d-md-flex gap-2"
+              >
+                <button id="btnCopy" class="btn btn-light">
+                  <i class="bi bi-clipboard"></i> Copy
+                </button>
+                <button id="btnNew" class="btn btn-dark">
+                  <i class="bi bi-plus-lg"></i> New
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inbox Card -->
+          <div class="card shadow-sm">
+            <div class="card-header d-flex align-items-center gap-3 flex-wrap">
+              <div class="fw-semibold">Inbox</div>
+              <div class="text-secondary small">
+                Last refreshed: <span id="lastRef">-</span>
+              </div>
+              <span
+                id="headerError"
+                class="badge text-bg-danger ms-auto"
+                style="display: none"
+              >
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                Failed to refresh messages from mail server
+              </span>
+              <button
+                id="btnRefresh"
+                class="btn btn-outline-secondary btn-sm ms-2"
+              >
+                <i class="bi bi-arrow-repeat"></i> Refresh
+              </button>
+            </div>
+
+            <div class="card-body p-0">
+              <div
+                id="alertBar"
+                class="alert alert-warning rounded-0 m-0 d-flex align-items-center"
+                role="alert"
+                style="display: none"
+              >
+                <i class="bi bi-exclamation-circle me-2"></i>
+                <span class="flex-grow-1"
+                  >Silahkan klik tombol Refresh jika email belum masuk!</span
+                >
+              </div>
+
+              <!-- List -->
+              <div id="inboxList" class="list-group list-group-flush">
+                <div class="px-3 py-2 text-secondary small">
+                  Loading messages...
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Detail Email -->
+    <div class="modal fade" id="mailModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="mailModalLabel">Email Detail</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-2 small text-secondary" id="mailMeta"></div>
+            <hr />
+            <div id="mailBody">
+              <div class="text-center text-secondary small">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="py-4 text-center text-secondary small">
+      Built with Bootstrap 5 — Made by Mafia Team
+    </footer>
+
+    <!-- App Script -->
+    <script>
+      const addr = document.getElementById("addr");
+      const lastRef = document.getElementById("lastRef");
+      const inboxList = document.getElementById("inboxList");
+      const alertBar = document.getElementById("alertBar");
+      const headerError = document.getElementById("headerError");
+
+      const mailModalEl = document.getElementById("mailModal");
+      const mailModalTitle = document.getElementById("mailModalLabel");
+      const mailMeta = document.getElementById("mailMeta");
+      const mailBody = document.getElementById("mailBody");
+
+      let autoRefreshTimer = null;
+      const AUTO_REFRESH_MS = 10000; // 10 detik
+
+      function randomAlias(length = 10) {
+        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let out = "";
+        for (let i = 0; i < length; i++) {
+          out += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return out;
+      }
+
+      async function registerAlias(address) {
+        try {
+          await fetch("http://localhost:3000/api/aliases", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ address })
+          });
+        } catch (e) {
+          console.error("Failed to register alias", e);
+        }
+      }
+
+      document
+        .getElementById("btnCopy")
+        .addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(addr.value);
+            toast("Email address copied");
+          } catch (e) {
+            console.error(e);
+          }
+        });
+
+      document.getElementById("btnNew").addEventListener("click", () => {
+        const current = addr.value.trim();
+        let domain = "selebungms.my.id";
+        if (current.includes("@")) {
+          domain = current.split("@")[1] || domain;
+        }
+        const alias = randomAlias(10);
+        const fullAddr = `${alias}@${domain}`;
+        addr.value = fullAddr;
+        toast("New address generated");
+        registerAlias(fullAddr);
+        lastRef.textContent = new Date().toLocaleTimeString();
+        loadInbox();
+      });
+
+      document
+        .getElementById("btnRefresh")
+        .addEventListener("click", () => {
+          lastRef.textContent = new Date().toLocaleTimeString();
+          loadInbox();
+        });
+
+      function startAutoRefresh() {
+        if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+        autoRefreshTimer = setInterval(() => {
+          lastRef.textContent = new Date().toLocaleTimeString();
+          loadInbox();
+        }, AUTO_REFRESH_MS);
+      }
+
+      async function loadInbox() {
+        try {
+          if (alertBar) alertBar.style.display = "none";
+          if (headerError) headerError.style.display = "none";
+
+          const emailAddr = addr.value.trim();
+          const url = new URL("http://localhost:3000/api/messages");
+          if (emailAddr) {
+            url.searchParams.set("alias", emailAddr);
+          }
+
+          const res = await fetch(url);
+          if (!res.ok) throw new Error("Failed to fetch messages");
+
+          const data = await res.json();
+          const messages = data.messages || [];
+
+          inboxList.innerHTML = "";
+
+          if (!messages.length) {
+            inboxList.innerHTML =
+              '<div class="px-3 py-2 text-secondary small">No messages found</div>';
+            return;
+          }
+
+          messages.forEach((msg) => {
+            const item = document.createElement("a");
+            item.href = "#";
+            item.className =
+              "list-group-item list-group-item-action mail-item py-3";
+            item.dataset.id = msg.id;
+
+            item.innerHTML = `
+              <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">${escapeHtml(
+                  msg.subject || "(no subject)"
+                )}</h6>
+                <small class="text-secondary">${escapeHtml(
+                  msg.date || ""
+                )}</small>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <div class="text-truncate text-secondary small">${escapeHtml(
+                  msg.snippet || ""
+                )}</div>
+                <div class="ms-auto d-flex align-items-center gap-3">
+                  <span class="text-secondary small d-none d-sm-inline">View</span>
+                  <i class="bi bi-eye"></i>
+                </div>
+              </div>
+            `;
+
+            item.addEventListener("click", (e) => {
+              e.preventDefault();
+              openMessage(msg.id);
+            });
+
+            inboxList.appendChild(item);
+          });
+
+          const info = document.createElement("div");
+          info.className = "px-3 py-2 text-secondary small";
+          info.textContent = `Showing 1 to ${messages.length} of ${messages.length} messages`;
+          inboxList.appendChild(info);
+        } catch (err) {
+          console.error(err);
+          if (alertBar) alertBar.style.display = "flex";
+          if (headerError) headerError.style.display = "inline-flex";
+          toast("Failed to refresh inbox");
+        }
+      }
+
+      async function openMessage(id) {
+        try {
+          mailModalTitle.textContent = "Loading...";
+          mailMeta.textContent = "";
+          mailBody.innerHTML =
+            '<div class="text-center text-secondary small">Loading...</div>';
+
+          const modal = new bootstrap.Modal(mailModalEl);
+          modal.show();
+
+          const res = await fetch(
+            `http://localhost:3000/api/messages/${id}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch message detail");
+
+          const data = await res.json();
+
+          mailModalTitle.textContent = data.subject || "(no subject)";
+          mailMeta.innerHTML = `
+            <div><strong>From:</strong> ${escapeHtml(data.from || "")}</div>
+            <div><strong>Date:</strong> ${escapeHtml(data.date || "")}</div>
+          `;
+
+          if (data.bodyHtml && data.bodyHtml.trim()) {
+            mailBody.innerHTML = data.bodyHtml;
+          } else if (data.bodyText && data.bodyText.trim()) {
+            mailBody.innerHTML =
+              '<pre class="small">' + escapeHtml(data.bodyText) + "</pre>";
+          } else {
+            mailBody.innerHTML =
+              '<div class="text-secondary small">No content.</div>';
+          }
+        } catch (err) {
+          console.error(err);
+          mailBody.innerHTML =
+            '<div class="text-danger small">Failed to load email content.</div>';
+        }
+      }
+
+      function toast(msg) {
+        const t = document.createElement("div");
+        t.className =
+          "position-fixed bottom-0 start-50 translate-middle-x mb-4 px-3 py-2 bg-dark text-white rounded-3 shadow";
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 1800);
+      }
+
+      function escapeHtml(str = "") {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      (function init() {
+        // kalau datang dari admin.html#alias
+        let hashAddr = "";
+        if (location.hash && location.hash.length > 1) {
+          try {
+            hashAddr = decodeURIComponent(location.hash.slice(1));
+          } catch (e) {
+            hashAddr = location.hash.slice(1);
+          }
+        }
+
+        let finalAddr = "";
+        if (hashAddr && hashAddr.includes("@")) {
+          finalAddr = hashAddr.trim();
+        } else {
+          const current = addr.value.trim();
+          let domain = "selebungms.my.id";
+          if (current.includes("@")) {
+            domain = current.split("@")[1] || domain;
+          }
+          finalAddr = `${randomAlias(10)}@${domain}`;
+        }
+
+        addr.value = finalAddr;
+        registerAlias(finalAddr);
+
+        lastRef.textContent = new Date().toLocaleTimeString();
+        loadInbox();
+        startAutoRefresh();
+      })();
+    </script>
+
+    <!-- Bootstrap JS bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
